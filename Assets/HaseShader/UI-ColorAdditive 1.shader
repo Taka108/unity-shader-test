@@ -1,6 +1,6 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-Shader "UI/Default"
+Shader "UI/Additive"
 {
     Properties
     {
@@ -47,7 +47,7 @@ Shader "UI/Default"
 
         Pass
         {
-            Name "Default"
+            Name "Additive"
         CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -126,7 +126,9 @@ Shader "UI/Default"
                 const half invAlphaPrecision = half(1.0/alphaPrecision);
                 IN.color.a = round(IN.color.a * alphaPrecision)*invAlphaPrecision;
 
-                half4 color = IN.color * (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd);
+                // half4 color = IN.color * (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd);
+                half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd);
+                color.rgb += IN.color.rgb; // 加算
 
                 #ifdef UNITY_UI_CLIP_RECT
                 half2 m = saturate((_ClipRect.zw - _ClipRect.xy - abs(IN.mask.xy)) * IN.mask.zw);
@@ -138,6 +140,7 @@ Shader "UI/Default"
                 #endif
 
                 color.rgb *= color.a;
+                //color.rgb *= IN.color.a;
 
                 return color;
             }
