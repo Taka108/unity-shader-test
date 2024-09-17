@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UI_Additive
-  m_Shader: {fileID: 4800000, guid: 11b0fabee999f44b386d71e1deb37055, type: 3}
+  m_Name: UI-ColorAdditiveMultiply
+  m_Shader: {fileID: 4800000, guid: b005f253c630a20448a2eedc7def23e8, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -30,6 +30,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _ColorMask: 15
+    - _Intensity: 12.72
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
