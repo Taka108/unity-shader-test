@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: UI-ColorOverlay
-  m_Shader: {fileID: 4800000, guid: 11b0fabee999f44b386d71e1deb37055, type: 3}
+  m_Shader: {fileID: 4800000, guid: 5244aa2640ff0ba4db3bcba3304490ba, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
