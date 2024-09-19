@@ -129,7 +129,7 @@ Shader "UI/ColorOverlay"
                 // half4 color = IN.color * (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd);
                 half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd);
 
-                // オーバーレイ
+                // オーバーレイ（コントラストがあがる）
                 // 　テクスチャの色が暗ければ乗算
                 // 　テクスチャの色が明るければスクリーン
                 //　　※2をかけることで、中間色周辺でも違和感なく混色される

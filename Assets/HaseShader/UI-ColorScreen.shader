@@ -1,6 +1,6 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-Shader "UI/ColorAdditive"
+Shader "UI/ColorScreen"
 {
     Properties
     {
@@ -128,7 +128,9 @@ Shader "UI/ColorAdditive"
 
                 // half4 color = IN.color * (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd);
                 half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd);
-                color.rgb += IN.color.rgb; // 加算 覆い焼き（リニア）
+
+                // スクリーン（乗算の逆）
+                color.rgb = 1.0 - (1.0 - color.rgb) * (1.0 - IN.color.rgb);
 
                 #ifdef UNITY_UI_CLIP_RECT
                 half2 m = saturate((_ClipRect.zw - _ClipRect.xy - abs(IN.mask.xy)) * IN.mask.zw);
