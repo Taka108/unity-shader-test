@@ -3,6 +3,7 @@ Shader "Hidden/Heipu/Metaball"
     Properties
     {
         _MainTex ("Main Tex", 2D) = "white" {}
+        _MetaballSource ("Metaball Source", 2D) = "white" {}
         _ColorRamp ("Color Ramp", 2D) = "white" {}
         _Threshold ("Threshold", float) = 0.04
         _LineLength ("Line Length", float) = 0.5
@@ -40,7 +41,7 @@ Shader "Hidden/Heipu/Metaball"
 
         half3 Sample(float2 uv)
         {
-            return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
+            return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv).xyz;
         }
 
         half3 SampleBox(float2 uv, float delta)

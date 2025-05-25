@@ -64,41 +64,39 @@ public sealed class MetaballPass : ScriptableRenderPass
     // ScriptableRenderContext.submit を呼び出す必要はありません。レンダリングパイプラインがパイプラインの特定のポイントでこれを呼び出します。
     public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
     {
+        // ターゲットがいなかったら早期リターン
         if (!targets.Any())
         {
             Debug.Log("ターゲットがいない！！");
             return;
         }
 
+        // 新しくバッファを取得して名前をつける
+        var cmd = CreateCommandBuffer(ref renderingData);
+
+        // テンプレ。GPUにこのコマンドの実行を命じて、リリース
+        context.ExecuteCommandBuffer(cmd);
+        CommandBufferPool.Release(cmd);
+    }
+
+    public CommandBuffer CreateCommandBuffer(ref RenderingData renderingData)
+    {
+        // カメラの取得
         var cam = renderingData.cameraData.camera;
         Debug.Log("カメラは" + cam.gameObject.name + "を使用しております");
+
+        // コマンドバッファを準備
         var cmd = CommandBufferPool.Get(profilerTag);
-        using (new ProfilingSample(cmd, profilerTag))
+        using (new ProfilingScope(cmd, new ProfilingSampler(profilerTag)))
         {
             var targetDescriptor = renderingData.cameraData.cameraTargetDescriptor;
             targetDescriptor.depthBufferBits = 0;
 
-            cmd.GetTemporaryRT(metaballSourceHandle.id, targetDescriptor, FilterMode.Bilinear);
-            cmd.SetRenderTarget(metaballSourceHandle.id);
-            cmd.ClearRenderTarget(true, true, Color.black, 1f);
+            // レンダーテクスチャ準備
+            SetupRenderTexture(ref cmd, renderingData);
 
-            foreach (var x in targets)
-            {
-                var pass = x.Material.FindPass("MetaballSource");
-
-                if (x.Transform is RectTransform rectTransform)
-                {
-                    var screenPos = RectTransformUtility.WorldToScreenPoint(cam, rectTransform.position);
-                    RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, screenPos, cam,
-                        out var worldPoint);
-                    var matrix = Matrix4x4.TRS(worldPoint, Quaternion.identity, rectTransform.lossyScale);
-                    cmd.DrawMesh(x.Mesh, matrix, x.Material, 0, pass, metaballSourceProps);
-                }
-                else
-                {
-                    cmd.DrawMesh(x.Mesh, x.Transform.localToWorldMatrix, x.Material, 0, pass, metaballSourceProps);
-                }
-            }
+            // メッシュ描画
+            foreach (var x in targets) DrawMesh(ref cmd, x, cam);
 
             // Blurring
 
@@ -137,8 +135,39 @@ public sealed class MetaballPass : ScriptableRenderPass
             cmd.Blit(currentDestination.id, SourceIdentifier, metaballMaterial, applyMetaballPass);
         }
 
-        context.ExecuteCommandBuffer(cmd);
-        CommandBufferPool.Release(cmd);
+        return cmd;
+    }
+
+    private void DrawMesh(ref CommandBuffer cmd, IDrawable drawable, Camera camera)
+    {
+        var pass = drawable.Material.FindPass("MetaballSource");
+
+        if (drawable.Transform is RectTransform rectTransform)
+        {
+            // uguiのImageなどを想定
+            var screenPos = RectTransformUtility.WorldToScreenPoint(camera, rectTransform.position);
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, screenPos, camera,
+                out var worldPoint);
+            var matrix = Matrix4x4.TRS(worldPoint, Quaternion.identity, rectTransform.lossyScale);
+            cmd.DrawMesh(drawable.Mesh, matrix, drawable.Material, 0, pass, metaballSourceProps);
+        }
+        else
+        {
+            // それ以外を想定
+            cmd.DrawMesh(drawable.Mesh, drawable.Transform.localToWorldMatrix, drawable.Material, 0, pass,
+                metaballSourceProps);
+        }
+    }
+
+    private void SetupRenderTexture(ref CommandBuffer cmd, RenderingData renderingData)
+    {
+        // RenderTextureを取得
+        // 名前IDはソースハンドルIDにしちゃう
+        cmd.GetTemporaryRT(metaballSourceHandle.id, targetDescriptor, FilterMode.Bilinear);
+        // 作成したレンダーテクスチャをコマンドにセット
+        cmd.SetRenderTarget(metaballSourceHandle.id);
+        // レンダーテクスチャのクリア
+        cmd.ClearRenderTarget(true, true, Color.black, 1f);
     }
 
     /// このレンダリング パスの実行中に作成された割り当てられたリソースをすべてクリーンアップします。
