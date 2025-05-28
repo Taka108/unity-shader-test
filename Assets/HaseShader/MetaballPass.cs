@@ -93,8 +93,7 @@ public sealed class MetaballPass : ScriptableRenderPass
             targetDescriptor.depthBufferBits = 0;
 
             // レンダーテクスチャ準備
-            SetupRenderTexture(ref cmd, renderingData);
-
+            SetupRenderTexture(ref cmd, renderingData, targetDescriptor);
             // メッシュ描画
             foreach (var x in targets) DrawMesh(ref cmd, x, cam);
 
@@ -159,7 +158,8 @@ public sealed class MetaballPass : ScriptableRenderPass
         }
     }
 
-    private void SetupRenderTexture(ref CommandBuffer cmd, RenderingData renderingData)
+    private void SetupRenderTexture(ref CommandBuffer cmd, RenderingData renderingData,
+        RenderTextureDescriptor targetDescriptor)
     {
         // RenderTextureを取得
         // 名前IDはソースハンドルIDにしちゃう
