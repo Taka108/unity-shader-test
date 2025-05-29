@@ -83,7 +83,7 @@ public sealed class MetaballPass : ScriptableRenderPass
     {
         // カメラの取得
         var cam = renderingData.cameraData.camera;
-        Debug.Log("カメラは" + cam.gameObject.name + "を使用しております");
+        //Debug.Log("カメラは" + cam.gameObject.name + "を使用しております");
 
         // コマンドバッファを準備
         var cmd = CommandBufferPool.Get(profilerTag);

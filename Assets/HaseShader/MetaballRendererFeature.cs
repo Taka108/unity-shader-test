@@ -24,7 +24,7 @@ public sealed class MetaballRendererFeature : ScriptableRendererFeature
 
     public override void Create()
     {
-        Debug.Log("MetaballPass Create");
+        Debug.Log("MetaballPass 生成");
         var metaballMaterial = CoreUtils.CreateEngineMaterial(settings.MetaballShader);
         metaballMaterial.SetTexture("_ColorRamp", settings.RampTexture);
         metaballMaterial.SetFloat("_Threshold", settings.Threshold);
@@ -42,7 +42,7 @@ public sealed class MetaballRendererFeature : ScriptableRendererFeature
 
     public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData)
     {
-        Debug.Log("MetaballPass AddRenderPasses");
+        Debug.Log("MetaballPass レンダラーのキューにパスを追加");
         metaballPass.SourceIdentifier = renderer.cameraColorTarget;
         renderer.EnqueuePass(metaballPass);
     }

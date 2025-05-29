@@ -5,7 +5,7 @@ Shader "Hidden/Heipu/Metaball"
         _MainTex ("Main Tex", 2D) = "white" {}
         _MetaballSource ("Metaball Source", 2D) = "white" {}
         _ColorRamp ("Color Ramp", 2D) = "white" {}
-        _Threshold ("Threshold", float) = 0.04
+        _Threshold ("Threshold", float) = 0.04  // 閾値
         _LineLength ("Line Length", float) = 0.5
         _Intensity ("Intensity", float) = 1
     }
@@ -137,6 +137,7 @@ Shader "Hidden/Heipu/Metaball"
                 // TODO:
                 c = lerp(c, half4(1, 1, 1, 1), step(_Threshold, d));
 
+                // 陰の表現っぽい。アニメも表示？
                 half4 ramp = SAMPLE_TEXTURE2D(_ColorRamp, sampler_MainTex, float2(d * 0.1 + _Time.y * 0.1, 0.1));
 
                 // c = lerp(half4(1, 1, 1, 1), c, smoothstep(_Threshold - d, _Threshold - d + 0.02, 0));
